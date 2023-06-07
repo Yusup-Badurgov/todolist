@@ -15,9 +15,38 @@ services:
       - "5432:5432"
     healthcheck:
       test: pg_isready -U ${DB_USER} -d ${DB_NAME}
-      timeout: 3s
+      timeout: 7s
       interval: 4s
       retries: 10
+
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
+    ports:
+      - "8000:8000"
+
+  migrations:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
+    command:
+      sh -c "python ./manage.py migrate"
+
 
 volumes:
   todolist:
