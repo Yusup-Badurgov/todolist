@@ -1,24 +1,13 @@
 version: '3.8'
 
 services:
-
-  db:
-    image: postgres:15.1-alpine
+  frontend:
+    image: sermalenk/skypro-front:lesson-34
     restart: always
-    environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
-    volumes:
-      - todolist:/var/lib/postgresql/data
+    depends_on:
+      - api
     ports:
-      - "5432:5432"
-    healthcheck:
-      test: pg_isready -U ${DB_USER} -d ${DB_NAME}
-      timeout: 7s
-      interval: 4s
-      retries: 10
-
+      - "80:80"
 
   api:
     build:
@@ -46,6 +35,23 @@ services:
       - .env
     command:
       sh -c "python ./manage.py migrate"
+
+  db:
+    image: postgres:15.1-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - todolist:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: pg_isready -U ${DB_USER} -d ${DB_NAME}
+      timeout: 15s
+      interval: 4s
+      retries: 10
 
 
 volumes:
