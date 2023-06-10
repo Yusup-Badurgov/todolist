@@ -24,21 +24,21 @@ jobs:
 #    steps:
 #      - name: clone code
 #        uses: actions/checkout@v3.5.2
-#      - name: render configs
-#        run: |
-#          mkdir deploy
-#      # Создали папку, перенесли данные из ci в системный .yaml который читает docker-compose up
-#          cat docker-compose-ci.yaml | envsubst > deploy_ci/docker-compose.yaml
-#          cat deploy/.env | envsubst > deploy_ci/.env
-#
-#    # ========= BEGIN SSH EXIT ==========
-#      - name: copy files to server
-#        uses: appleboy/scp-action@master # позволяет копировать файлы или директории с локальной машины (работающей на GitHub Actions) на удаленный сервер с использованием протокола SCP (Secure Copy).
-#        with:
-#          host: ${{ secrets.SSH_HOST}} # публичный адрес виртуальной машины или домен
-#          username: ${{ secrets.SSH_USERNAME}} # имя пользователя на ВМ (логин)
-#          password: ${{ secrets.SSH_PASSWORD}}
-#          script: |
-#            cd todolist
-#            docker-compose down
-#            docker-compose up -d
+      - name: render configs
+        run: |
+          mkdir deploy
+      # Создали папку, перенесли данные из ci в системный .yaml который читает docker-compose up
+          cat docker-compose-ci.yaml | envsubst > deploy_ci/docker-compose.yaml
+          cat deploy/.env | envsubst > deploy_ci/.env
+
+    # ========= BEGIN SSH EXIT ==========
+      - name: copy files to server
+        uses: appleboy/scp-action@master # позволяет копировать файлы или директории с локальной машины (работающей на GitHub Actions) на удаленный сервер с использованием протокола SCP (Secure Copy).
+        with:
+          host: ${{ secrets.SSH_HOST}} # публичный адрес виртуальной машины или домен
+          username: ${{ secrets.SSH_USERNAME}} # имя пользователя на ВМ (логин)
+          password: ${{ secrets.SSH_PASSWORD}}
+          script: |
+            cd todolist
+            docker-compose down
+            docker-compose up -d
