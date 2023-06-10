@@ -12,33 +12,33 @@ jobs:
         run: echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
       - name: docker push
         run: docker push yusup26/django-todolist:$GITHUB_REF_NAME-$GITHUB_RUN_ID # на докер хаб также создаются образы с этими же актуаьлными тегами и ID в одном репозитории
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build_and_push
-    env:
-      # указываю пользовательские данные от БД
-      SECRET_KEY: ${{ secrets.SECRET_KEY }}
-      DB_USER: ${{ secrets.DB_USER }}
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      DB_NAME: ${{ secrets.DB_NAME }}
-    steps:
-      - name: clone code
-        uses: actions/checkout@v3.5.2
-      - name: render configs
-        run: |
-          mkdir deploy
-      # Создали папку, перенесли данные из ci в системный .yaml который читает docker-compose up
-          cat docker-compose-ci.yaml | envsubst > deploy_ci/docker-compose.yaml
-          cat deploy/.env | envsubst > deploy_ci/.env
-
-    # ========= BEGIN SSH EXIT ==========
-      - name: copy files to server
-        uses: appleboy/scp-action@master # позволяет копировать файлы или директории с локальной машины (работающей на GitHub Actions) на удаленный сервер с использованием протокола SCP (Secure Copy).
-        with:
-          host: ${{ secrets.SSH_HOST}} # публичный адрес виртуальной машины или домен
-          username: ${{ secrets.SSH_USERNAME}} # имя пользователя на ВМ (логин)
-          password: ${{ secrets.SSH_PASSWORD}}
-          script: |
-            cd todolist
-            docker-compose down
-            docker-compose up -d
+#  deploy:
+#    runs-on: ubuntu-latest
+#    needs: build_and_push
+#    env:
+#      # указываю пользовательские данные от БД
+#      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+#      DB_USER: ${{ secrets.DB_USER }}
+#      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+#      DB_NAME: ${{ secrets.DB_NAME }}
+#    steps:
+#      - name: clone code
+#        uses: actions/checkout@v3.5.2
+#      - name: render configs
+#        run: |
+#          mkdir deploy
+#      # Создали папку, перенесли данные из ci в системный .yaml который читает docker-compose up
+#          cat docker-compose-ci.yaml | envsubst > deploy_ci/docker-compose.yaml
+#          cat deploy/.env | envsubst > deploy_ci/.env
+#
+#    # ========= BEGIN SSH EXIT ==========
+#      - name: copy files to server
+#        uses: appleboy/scp-action@master # позволяет копировать файлы или директории с локальной машины (работающей на GitHub Actions) на удаленный сервер с использованием протокола SCP (Secure Copy).
+#        with:
+#          host: ${{ secrets.SSH_HOST}} # публичный адрес виртуальной машины или домен
+#          username: ${{ secrets.SSH_USERNAME}} # имя пользователя на ВМ (логин)
+#          password: ${{ secrets.SSH_PASSWORD}}
+#          script: |
+#            cd todolist
+#            docker-compose down
+#            docker-compose up -d
