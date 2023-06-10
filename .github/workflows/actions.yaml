@@ -73,7 +73,7 @@ jobs:
       - name: Removing Images
         uses: appleboy/ssh-action@v0.1.10
         with:
-          host: ${{ secrets.HOST }}
+          host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
