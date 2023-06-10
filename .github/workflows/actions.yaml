@@ -49,8 +49,8 @@ jobs:
         uses: appleboy/scp-action@v0.1.4
         with:
           # Эти значения надо вписать в секреты гитхаба
-          host: ${{ secrets.HOST }}
-          port: ${{ secrets.PORT }}
+          host: ${{ secrets.SSH_HOST }}
+          port: ${{ secrets.SSH_PORT }}
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           # Указываем, какие файлы копировать
