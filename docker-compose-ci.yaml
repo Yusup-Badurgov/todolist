@@ -26,7 +26,7 @@ services:
       DEBUG: ${DEBUG}
     restart: always
     depends_on:
-      pgdb:
+      db:
         condition: service_healthy
     ports:
       - "8000:8000"
@@ -59,8 +59,8 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     restart: always
-    # Задание имени контейнера для сервиса pgdb
-    container_name: pgdb
+    # Задание имени контейнера для сервиса db
+    container_name: db
     # Связывание тома с директорией в контейнере для сохранения данных postgres
     volumes:
       - db_data:/var/lib/postgresql/data/
