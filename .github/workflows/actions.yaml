@@ -69,12 +69,12 @@ jobs:
             cd deploy
             echo ${{ secrets.SSH_PASSWORD }} | sudo -S docker-compose up -d
 
-      # ========= REMOVING INACTIVE IMAGES ============
-      - name: Removing Images
-        uses: appleboy/ssh-action@v0.1.10
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          script: |
-            docker system prune -a -f
+#      # ========= REMOVING INACTIVE IMAGES ============
+#      - name: Removing Images
+#        uses: appleboy/ssh-action@v0.1.10
+#        with:
+#          host: ${{ secrets.SSH_HOST }}
+#          username: ${{ secrets.SSH_USERNAME }}
+#          password: ${{ secrets.SSH_PASSWORD }}
+#          script: |
+#            docker system prune -a -f
