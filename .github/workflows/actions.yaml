@@ -40,7 +40,7 @@ jobs:
 
       - name: Render configs
         run: |-
-          mkdir deploy
+          mkdir deploy_ci
           cat docker-compose-ci.yaml | envsubst > deploy_ci/docker-compose.yaml
           cat deploy/.env | envsubst > deploy_ci/.env
 
