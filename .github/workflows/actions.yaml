@@ -3,7 +3,6 @@ on:
   push:
     branches: ["master"]
 
-
 jobs:
   build_and_push:
     runs-on: ubuntu-20.04
@@ -33,7 +32,6 @@ jobs:
       DB_NAME: ${{ secrets.DB_NAME }}
       DEBUG: ${{secrets.DEBUG}}
 
-
     steps:
       - name: Clone Code
         uses: actions/checkout@v3.5.2
@@ -57,3 +55,26 @@ jobs:
           source: "deploy_ci/docker-compose.yaml, deploy_ci/.env"
           target: "deploy"
           strip_components: 1
+
+      # ========== START DOCKER CONTAINER ==========
+      - name: Executing remote SSH commands using PASSWORD
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: |-
+            whoami
+            cd deploy
+            echo ${{ secrets.SSH_PASSWORD }} | sudo -S docker-compose up -d
+
+      # ========= REMOVING INACTIVE IMAGES ============
+      - name: Removing Images
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            docker system prune -a -f

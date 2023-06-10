@@ -3,32 +3,48 @@ version: '3.8'
 services:
   frontend:
     image: sermalenk/skypro-front:lesson-34
+    container_name: frontend
     restart: always
-    depends_on:
-      - api
     ports:
       - "80:80"
+    depends_on:
+      api:
+        condition: service_started
 
   api:
-    image: yusup26/django-todolist:$GITHUB_REF_NAME-$GITHUB_RUN_ID .
+    image: yusup26/django-todolist:${GITHUB_REF_NAME}-${GITHUB_RUN_ID}
+    container_name: api
+    command: gunicorn todolist.wsgi:application --bind 0.0.0.0:8000
+    env_file: .env
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      SECRET_KEY: ${SECRET_KEY}
+      DEBUG: ${DEBUG}
     restart: always
-    env_file:
-      - ./../deploy/.env
     depends_on:
-      db:
+      pgdb:
         condition: service_healthy
-      migrations:
-        condition: service_completed_successfully
     ports:
       - "8000:8000"
+    volumes:
+      - .:/app
 
   migrations:
-    image: yusup26/django-todolist:$GITHUB_REF_NAME-$GITHUB_RUN_ID .
+    image: yusup26/django-todolist:${GITHUB_REF_NAME}-${GITHUB_RUN_ID}
+    container_name: migrations
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
     depends_on:
       db:
         condition: service_healthy
-    env_file:
-      - ./../deploy/.env
     command:
       sh -c "python ./manage.py migrate"
 
