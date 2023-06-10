@@ -27,7 +27,7 @@ jobs:
       - name: render configs
         run: |
           mkdir deploy
-      # Создали папку, перенесли данные из ci в системный .yaml который читает docker up
+      # Создали папку, перенесли данные из ci в системный .yaml который читает docker-compose up
           cat docker-compose-ci.yaml | envsubst > deploy_ci/docker-compose.yaml
           cat deploy/.env | envsubst > deploy_ci/.env
 
