@@ -27,13 +27,33 @@ jobs:
     needs: build_and_push
     runs-on: ubuntu-20.04
     env:
-
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       DB_USER: ${{ secrets.DB_USER }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       DB_NAME: ${{ secrets.DB_NAME }}
       DEBUG: ${{secrets.DEBUG}}
 
+
     steps:
       - name: Clone Code
         uses: actions/checkout@v3.5.2
+
+      - name: Render configs
+        run: |-
+          mkdir deploy
+          cat docker-compose-ci.yaml | envsubst > deploy_ci/docker-compose.yaml
+          cat deploy/.env | envsubst > deploy_ci/.env
+
+      # ========= BEGIN SSH EXIT ==========
+      - name: Clone files to server
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          # Эти значения надо вписать в секреты гитхаба
+          host: ${{ secrets.HOST }}
+          port: ${{ secrets.PORT }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          # Указываем, какие файлы копировать
+          source: "deploy_ci/docker-compose.yaml, deploy_ci/.env"
+          target: "deploy"
+          strip_components: 1
