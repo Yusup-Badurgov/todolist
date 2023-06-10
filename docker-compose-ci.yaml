@@ -10,12 +10,10 @@ services:
       - "80:80"
 
   api:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: yusup26/django-todolist:$GITHUB_REF_NAME-$GITHUB_RUN_ID .
     restart: always
     env_file:
-      - .env
+      - ./../deploy/.env
     depends_on:
       db:
         condition: service_healthy
@@ -25,14 +23,12 @@ services:
       - "8000:8000"
 
   migrations:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: yusup26/django-todolist:$GITHUB_REF_NAME-$GITHUB_RUN_ID .
     depends_on:
       db:
         condition: service_healthy
     env_file:
-      - .env
+      - ./../deploy/.env
     command:
       sh -c "python ./manage.py migrate"
 
@@ -40,7 +36,7 @@ services:
     image: postgres:15.1-alpine
     restart: always
     env_file:
-      - .env
+      - ./../deploy/.env
     volumes:
       - todolist:/var/lib/postgresql/data
     ports:
