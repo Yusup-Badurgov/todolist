@@ -33,20 +33,26 @@ services:
       sh -c "python ./manage.py migrate"
 
   db:
-    image: postgres:15.1-alpine
-    restart: always
-    env_file:
-      - ./../deploy/.env
-    volumes:
-      - todolist:/var/lib/postgresql/data
+    # Использование готового образа postgres
+    image: postgres:15.2
+    # Задание переменных окружения для контейнера с postgres
     ports:
       - "5432:5432"
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    restart: always
+    # Задание имени контейнера для сервиса pgdb
+    container_name: pgdb
+    # Связывание тома с директорией в контейнере для сохранения данных postgres
+    volumes:
+      - db_data:/var/lib/postgresql/data/
     healthcheck:
-      test: pg_isready -U ${DB_USER} -d ${DB_NAME}
-      timeout: 15s
-      interval: 4s
-      retries: 10
-
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 15
 
 volumes:
   db_data:
