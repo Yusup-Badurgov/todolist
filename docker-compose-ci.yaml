@@ -2,70 +2,75 @@ version: '3.8'
 
 services:
   frontend:
-    image: sermalenk/skypro-front:lesson-34  # Образ контейнера для фронтенда
-    container_name: frontend  # Задание имени контейнера для сервиса frontend
-    restart: always  # Перезапускать контейнер всегда при его остановке
+    image: sermalenk/skypro-front:lesson-34
+    container_name: frontend
+    restart: always
     ports:
-      - "80:80"  # Привязка порта 80 контейнера к порту 80 хоста
+      - "80:80"
     depends_on:
       api:
-        condition: service_started  # Ожидание, пока сервис api будет запущен
+        condition: service_started
 
   api:
-    image: yusup26/django-todolist:${GITHUB_REF_NAME}-${GITHUB_RUN_ID}  # Образ контейнера для API, с динамическим тегом
-    container_name: api  # Задание имени контейнера для сервиса api
-    command: python manage.py runserver 0.0.0.0:8000  # Выполнение команды для запуска сервера Django
-    env_file: .env  # Использование файла .env для загрузки переменных окружения
+    image: yusup26/django-todolist:${GITHUB_REF_NAME}-${GITHUB_RUN_ID}
+    container_name: api
+#    command: gunicorn todolist.wsgi:application --bind 0.0.0.0:8000
+    command: python manage.py runserver 0.0.0.0:8000
+    env_file: .env
     environment:
-      DB_HOST: db  # Установка хоста базы данных
-      DB_PORT: 5432  # Установка порта базы данных
-      DB_NAME: ${DB_NAME}  # Установка имени базы данных
-      DB_USER: ${DB_USER}  # Установка пользователя базы данных
-      DB_PASSWORD: ${DB_PASSWORD}  # Установка пароля базы данных
-      SECRET_KEY: ${SECRET_KEY}  # Установка секретного ключа
-      DEBUG: ${DEBUG}  # Установка режима отладки
-    restart: always  # Перезапускать контейнер всегда при его остановке
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      SECRET_KEY: ${SECRET_KEY}
+      DEBUG: ${DEBUG}
+    restart: always
     depends_on:
       db:
-        condition: service_healthy  # Ожидание, пока сервис db будет в состоянии "здоров"
+        condition: service_healthy
     ports:
-      - "8000:8000"  # Привязка порта 8000 контейнера к порту 8000 хоста
+      - "8000:8000"
     volumes:
-      - .:/app  # Связывание текущего каталога с директорией /app в контейнере
+      - .:/app
 
   migrations:
-    image: yusup26/django-todolist:${GITHUB_REF_NAME}-${GITHUB_RUN_ID}  # Образ контейнера для миграций, с динамическим тегом
-    container_name: migrations  # Задание имени контейнера для сервиса migrations
+    image: yusup26/django-todolist:${GITHUB_REF_NAME}-${GITHUB_RUN_ID}
+    container_name: migrations
     environment:
-      DB_HOST: db  # Установка хоста базы данных
-      DB_PORT: 5432  # Установка порта базы данных
-      DB_NAME: ${DB_NAME}  # Установка имени базы данных
-      DB_USER: ${DB_USER}  # Установка пользователя базы данных
-      DB_PASSWORD: ${DB_PASSWORD}  # Установка пароля базы данных
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
     depends_on:
       db:
-        condition: service_healthy  # Ожидание, пока сервис db будет в состоянии "здоров"
+        condition: service_healthy
     command:
-      sh -c "python ./manage.py migrate"  # Выполнение команды для миграции базы данных
+      sh -c "python ./manage.py migrate"
 
   db:
-    image: postgres:15.2  # Образ контейнера для базы данных PostgreSQL
+    # Использование готового образа postgres
+    image: postgres:15.2
+    # Задание переменных окружения для контейнера с postgres
     ports:
-      - "5432:5432"  # Привязка порта 5432 контейнера к порту 5432 хоста
+      - "5432:5432"
     environment:
-      POSTGRES_DB: ${DB_NAME}  # Установка имени базы данных
-      POSTGRES_USER: ${DB_USER}  # Установка пользователя базы данных
-      POSTGRES_PASSWORD: ${DB_PASSWORD}  # Установка пароля базы данных
-    restart: always  # Перезапускать контейнер всегда при его остановке
-    container_name: db  # Задание имени контейнера для сервиса db
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    restart: always
+    # Задание имени контейнера для сервиса db
+    container_name: db
+    # Связывание тома с директорией в контейнере для сохранения данных postgres
     volumes:
-      - db_data:/var/lib/postgresql/data/  # Связывание тома с директорией в контейнере для сохранения данных PostgreSQL
+      - db_data:/var/lib/postgresql/data/
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]  # Проверка доступности базы данных
-      interval: 5s  # Интервал между проверками
-      timeout: 5s  # Время ожидания выполнения healthcheck
-      retries: 15  # Количество попыток проверки
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 15
 
 volumes:
-  db_data:  # Определение тома для контейнера
-  todolist:  # Определение тома для контейнера
+  db_data:
+  todolist:
