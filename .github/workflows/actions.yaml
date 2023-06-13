@@ -38,11 +38,10 @@ jobs:
         uses: actions/checkout@v3.5.2
 
       - name: Render configs  # Шаг создания конфигурационных файлов
-        run: |-  # Выполнение команд в рабочем окружении; Создание директории deploy_ci; Замена переменных в docker-compose-ci.yaml и сохранение в deploy_ci/docker-compose.yaml и в .env
-          
-          mkdir deploy_ci
-          cat docker-compose-ci.yaml | envsubst > deploy_ci/docker-compose.yaml
-          cat deploy/.env | envsubst > deploy_ci/.env
+        run: |-  # Выполнение команд в рабочем окружении
+          mkdir deploy_ci  # Создание директории deploy_ci
+          cat docker-compose-ci.yaml | envsubst > deploy_ci/docker-compose.yaml  # Замена переменных в docker-compose-ci.yaml и сохранение в deploy_ci/docker-compose.yaml
+          cat deploy/.env | envsubst > deploy_ci/.env  # Замена переменных в deploy/.env и сохранение в deploy_ci/.env
 
       - name: Clone files to server  # Шаг копирования файлов на сервер
         uses: appleboy/scp-action@v0.1.4
