@@ -1,60 +1,58 @@
-name: Build and deploy action
+name: Build and deploy action  # Название workflow
+
 on:
   push:
-    branches: ["master"]
+    branches: ["master"]  # Запуск workflow при push в ветку master
 
 jobs:
   build_and_push:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-20.04  # Запуск на операционной системе Ubuntu 20.04
     steps:
-      - name: Checkout
+      - name: Checkout  # Шаг клонирования репозитория
         uses: actions/checkout@v3.5.2
 
-      - name: Login to DockerHub
+      - name: Login to DockerHub  # Шаг входа в DockerHub
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-          logout: true
+          username: ${{ secrets.DOCKERHUB_USERNAME }}  # Логин DockerHub из секретов
+          password: ${{ secrets.DOCKERHUB_TOKEN }}  # Пароль DockerHub из секретов
+          logout: true  # Выход из DockerHub после выполнения шага
 
-      - name: Build and Push Container
-        run: |-
+      - name: Build and Push Container  # Шаг сборки и публикации контейнера
+        run: |-  # Выполнение команд в рабочем окружении   # Сборка контейнера   # Публикация контейнера
           docker build -t yusup26/django-todolist:$GITHUB_REF_NAME-$GITHUB_RUN_ID .
           docker push yusup26/django-todolist:$GITHUB_REF_NAME-$GITHUB_RUN_ID
 
   deploy:
-    needs: build_and_push
-    runs-on: ubuntu-20.04
-    env:
-      SECRET_KEY: ${{ secrets.SECRET_KEY }}
-      DB_USER: ${{ secrets.DB_USER }}
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      DB_NAME: ${{ secrets.DB_NAME }}
-      DEBUG: ${{secrets.DEBUG}}
+    needs: build_and_push  # Зависимость от успешного завершения job build_and_push
+    runs-on: ubuntu-20.04  # Запуск на операционной системе Ubuntu 20.04
+    env:  # Определение переменных окружения для job
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}  # Секретный ключ из секретов
+      DB_USER: ${{ secrets.DB_USER }}  # Пользователь базы данных из секретов
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}  # Пароль базы данных из секретов
+      DB_NAME: ${{ secrets.DB_NAME }}  # Имя базы данных из секретов
+      DEBUG: ${{secrets.DEBUG}}  # Режим отладки из секретов
 
     steps:
-      - name: Clone Code
+      - name: Clone Code  # Шаг клонирования репозитория
         uses: actions/checkout@v3.5.2
 
-      - name: Render configs
-        run: |-
-          mkdir deploy_ci
+      - name: Render configs  # Шаг создания конфигурационных файлов
+        run: |-  # Выполнение команд в рабочем окружении
+          mkdir deploy_ci  # Создание директории deploy_ci
           cat docker-compose-ci.yaml | envsubst > deploy_ci/docker-compose.yaml
           cat deploy/.env | envsubst > deploy_ci/.env
 
-      # ========= BEGIN SSH EXIT ==========
-      - name: Clone files to server
+      - name: Clone files to server  # Шаг копирования файлов на сервер
         uses: appleboy/scp-action@v0.1.4
         with:
-          # Эти значения надо вписать в секреты гитхаба
-          host: ${{ secrets.SSH_HOST }}
-          port: ${{ secrets.SSH_PORT }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          # Указываем, какие файлы копировать
-          source: "deploy_ci/docker-compose.yaml, deploy_ci/.env"
-          target: "deploy"
-          strip_components: 1
+          host: ${{ secrets.SSH_HOST }}  # Хост сервера из секретов
+          port: ${{ secrets.SSH_PORT }}  # Порт сервера из секретов
+          username: ${{ secrets.SSH_USERNAME }}  # Имя пользователя сервера из секретов
+          password: ${{ secrets.SSH_PASSWORD }}  # Пароль пользователя сервера из секретов
+          source: "deploy_ci/docker-compose.yaml, deploy_ci/.env"  # Исходные файлы для копирования
+          target: "deploy"  # Целевая директория на сервере
+          strip_components: 1  # Количество компонентов пути для удаления
 
       # ========== START DOCKER CONTAINER ==========
       - name: Executing remote SSH commands using PASSWORD
