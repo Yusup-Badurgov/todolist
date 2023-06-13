@@ -2,55 +2,66 @@ version: '3.8'
 
 services:
   frontend:
-    image: sermalenk/skypro-front:lesson-34
-    restart: always
+    image: sermalenk/skypro-front:lesson-34  # Образ контейнера для фронтенда
+    restart: always  # Перезапускать контейнер всегда при его остановке
     depends_on:
-      - api
+      - api  # Ожидание запуска сервиса api перед запуском фронтенда
     ports:
-      - "80:80"
+      - "80:80"  # Привязка порта 80 контейнера к порту 80 хоста
 
   api:
     build:
       context: .
-      dockerfile: Dockerfile
-    restart: always
+      dockerfile: Dockerfile  # Использование Dockerfile для построения образа контейнера
+    restart: always  # Перезапускать контейнер всегда при его остановке
     env_file:
-      - .env
+      - .env  # Использование файла .env для загрузки переменных окружения
     depends_on:
       db:
-        condition: service_healthy
+        condition: service_healthy  # Ожидание, пока сервис db будет в состоянии "здоров"
       migrations:
-        condition: service_completed_successfully
+        condition: service_completed_successfully  # Ожидание, пока сервис migrations завершит работу успешно
     ports:
-      - "8000:8000"
+      - "8000:8000"  # Привязка порта 8000 контейнера к порту 8000 хоста
 
   migrations:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile  # Использование Dockerfile для построения образа контейнера
     depends_on:
       db:
-        condition: service_healthy
+        condition: service_healthy  # Ожидание, пока сервис db будет в состоянии "здоров"
     env_file:
-      - .env
+      - .env  # Использование файла .env для загрузки переменных окружения
     command:
-      sh -c "python ./manage.py migrate"
+      sh -c "python ./manage.py migrate"  # Выполнение команды для миграции базы данных
 
   db:
-    image: postgres:15.1-alpine
-    restart: always
+    image: postgres:15.1-alpine  # Образ контейнера для базы данных PostgreSQL
+    restart: always  # Перезапускать контейнер всегда при его остановке
     env_file:
-      - .env
+      - .env  # Использование файла .env для загрузки переменных окружения
     volumes:
-      - todolist:/var/lib/postgresql/data
+      - todolist:/var/lib/postgresql/data  # Связывание тома с директорией в контейнере для сохранения данных PostgreSQL
     ports:
-      - "5432:5432"
+      - "5432:5432"  # Привязка порта 5432 контейнера к порту 5432 хоста
     healthcheck:
-      test: pg_isready -U ${DB_USER} -d ${DB_NAME}
-      timeout: 15s
-      interval: 4s
-      retries: 10
-
+      test: pg_isready -U ${DB_USER} -d ${DB_NAME}  # Проверка доступности базы данных
+      timeout: 15s  # Время ожидания выполнения healthcheck
+      interval: 4s  # Интервал между проверками
+      retries: 10  # Количество попыток проверки
 
 volumes:
-  todolist:
+  todolist:  # Определение тома для контейнера
+
+
+#Разница между docker-compose.yaml и docker-compose-ci.yaml:
+#
+#В docker-compose-ci.yaml в сервисе frontend было добавлено container_name: frontend, чтобы явно задать имя контейнера.
+#В сервисе api docker-compose-ci.yaml был изменен image на yusup26/django-todolist:${GITHUB_REF_NAME}-${GITHUB_RUN_ID},
+# что позволяет использовать динамический тег для образа контейнера.
+#В сервисе migrations docker-compose-ci.yaml также был изменен image на yusup26/django-todolist:${GITHUB_REF_NAME}-${GITHUB_RUN_ID}, используя динамический тег.
+#В сервисе db docker-compose-ci.yaml был обновлен образ до postgres:15.2.
+#В сервисе db docker-compose-ci.yaml был удален параметр env_file, и вместо этого переменные окружения были установлены напрямую в секции environment.
+#В сервисе db docker-compose-ci.yaml был удален параметр healthcheck с форматом проверки CMD-SHELL, и вместо него использован более
+#простой формат проверки доступности базы данных с помощью команды pg_isready.
