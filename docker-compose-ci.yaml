@@ -23,6 +23,8 @@ services:
       DB_USER: ${DB_USER}  # Установка пользователя базы данных
       DB_PASSWORD: ${DB_PASSWORD}  # Установка пароля базы данных
       SECRET_KEY: ${SECRET_KEY}  # Установка секретного ключа
+      VK_OAUTH_KEY: ${VK_OAUTH_KEY} #id приложения VK
+      VK_OAUTH_SECRET: ${VK_OAUTH_SECRET} #Секрет приложения VK
       DEBUG: ${DEBUG}  # Установка режима отладки
     restart: always  # Перезапускать контейнер всегда при его остановке
     depends_on:
