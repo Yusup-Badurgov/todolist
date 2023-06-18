@@ -135,16 +135,16 @@ STATIC_URL = 'static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-SOCIAL_AUTH_JSONFIELD_ENABLED = True
-SOCIAL_AUTH_VK_OAUTH2_KEY = env('VK_OAUTH_KEY')
-SOCIAL_AUTH_VK_OAUTH2_SECRET = env('VK_OAUTH_SECRET')
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
-SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/logged-in/'
-SOCIAL_AUTH_USER_MODEL = 'core.User'
-SOCIAL_AUTH_VK_OAUTH2_SCOPE = ['email']
-AUTHENTICATION_BACKENDS = (
-    'social_core.backends.vk.VKOAuth2',
-    'django.contrib.auth.backends.ModelBackend'
-)
+# DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+#
+# SOCIAL_AUTH_JSONFIELD_ENABLED = True
+# SOCIAL_AUTH_VK_OAUTH2_KEY = env('VK_OAUTH_KEY')
+# SOCIAL_AUTH_VK_OAUTH2_SECRET = env('VK_OAUTH_SECRET')
+# SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
+# SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/logged-in/'
+# SOCIAL_AUTH_USER_MODEL = 'core.User'
+# SOCIAL_AUTH_VK_OAUTH2_SCOPE = ['email']
+# AUTHENTICATION_BACKENDS = (
+#     'social_core.backends.vk.VKOAuth2',
+#     'django.contrib.auth.backends.ModelBackend'
+# )
