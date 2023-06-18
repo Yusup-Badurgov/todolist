@@ -31,8 +31,8 @@ jobs:
       DB_USER: ${{ secrets.DB_USER }}  # Пользователь базы данных из секретов
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}  # Пароль базы данных из секретов
       DB_NAME: ${{ secrets.DB_NAME }}  # Имя базы данных из секретов
-      VK_OAUTH_KEY: ${secrets.VK_OAUTH_KEY} #id приложения VK
-      VK_OAUTH_SECRET: ${secrets.VK_OAUTH_SECRET} #Секрет приложения VK
+      VK_OAUTH_KEY: ${{ secrets.VK_OAUTH_KEY }} #id приложения VK
+      VK_OAUTH_SECRET: ${{ secrets.VK_OAUTH_SECRET }} #Секрет приложения VK
       DEBUG: ${{secrets.DEBUG}}  # Режим отладки из секретов
 
     steps:
