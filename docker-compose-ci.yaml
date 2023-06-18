@@ -40,6 +40,8 @@ services:
     container_name: migrations  # Задание имени контейнера для сервиса migrations
     environment:
       SECRET_KEY: ${SECRET_KEY}
+      VK_OAUTH_KEY: ${VK_OAUTH_KEY} #id приложения VK
+      VK_OAUTH_SECRET: ${VK_OAUTH_SECRET} #Секрет приложения VK
       DB_HOST: db  # Установка хоста базы данных
       DB_PORT: 5432  # Установка порта базы данных
       DB_NAME: ${DB_NAME}  # Установка имени базы данных
