@@ -39,6 +39,7 @@ services:
     image: yusup26/django-todolist:${GITHUB_REF_NAME}-${GITHUB_RUN_ID}  # Образ контейнера для миграций, с динамическим тегом
     container_name: migrations  # Задание имени контейнера для сервиса migrations
     environment:
+      SECRET_KEY: ${SECRET_KEY}
       DB_HOST: db  # Установка хоста базы данных
       DB_PORT: 5432  # Установка порта базы данных
       DB_NAME: ${DB_NAME}  # Установка имени базы данных
