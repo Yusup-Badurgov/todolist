@@ -14,8 +14,18 @@ services:
       context: .
       dockerfile: Dockerfile  # Использование Dockerfile для построения образа контейнера
     restart: always  # Перезапускать контейнер всегда при его остановке
-    env_file:
-      - .env  # Использование файла .env для загрузки переменных окружения
+#    env_file:
+#      - .env  # Использование файла .env для загрузки переменных окружения
+    environment:
+      DB_HOST: db  # Установка хоста базы данных
+      DB_PORT: 5432  # Установка порта базы данных
+      DB_NAME: ${DB_NAME}  # Установка имени базы данных
+      DB_USER: ${DB_USER}  # Установка пользователя базы данных
+      DB_PASSWORD: ${DB_PASSWORD}  # Установка пароля базы данных
+      SECRET_KEY: ${SECRET_KEY}  # Установка секретного ключа
+      VK_OAUTH_KEY: ${VK_OAUTH_KEY} #id приложения VK
+      VK_OAUTH_SECRET: ${VK_OAUTH_SECRET} #Секрет приложения VK
+      DEBUG: ${DEBUG}  # Установка режима отладки
     depends_on:
       db:
         condition: service_healthy  # Ожидание, пока сервис db будет в состоянии "здоров"
@@ -31,8 +41,17 @@ services:
     depends_on:
       db:
         condition: service_healthy  # Ожидание, пока сервис db будет в состоянии "здоров"
-    env_file:
-      - .env  # Использование файла .env для загрузки переменных окружения
+#    env_file:
+#      - .env  # Использование файла .env для загрузки переменных окружения
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      VK_OAUTH_KEY: ${VK_OAUTH_KEY} #id приложения VK
+      VK_OAUTH_SECRET: ${VK_OAUTH_SECRET} #Секрет приложения VK
+      DB_HOST: db  # Установка хоста базы данных
+      DB_PORT: 5432  # Установка порта базы данных
+      DB_NAME: ${DB_NAME}  # Установка имени базы данных
+      DB_USER: ${DB_USER}  # Установка пользователя базы данных
+      DB_PASSWORD: ${DB_PASSWORD}  # Установка пароля базы данных
     command:
       sh -c "python ./manage.py migrate"  # Выполнение команды для миграции базы данных
 
@@ -41,6 +60,7 @@ services:
     restart: always  # Перезапускать контейнер всегда при его остановке
     env_file:
       - .env  # Использование файла .env для загрузки переменных окружения
+
     volumes:
       - todolist:/var/lib/postgresql/data  # Связывание тома с директорией в контейнере для сохранения данных PostgreSQL
     ports:

@@ -15,7 +15,7 @@ services:
     image: yusup26/django-todolist:${GITHUB_REF_NAME}-${GITHUB_RUN_ID}  # Образ контейнера для API, с динамическим тегом
     container_name: api  # Задание имени контейнера для сервиса api
     command: python manage.py runserver 0.0.0.0:8000  # Выполнение команды для запуска сервера Django
-    env_file: .env  # Использование файла .env для загрузки переменных окружения
+    #env_file: .env  # Использование файла .env для загрузки переменных окружения
     environment:
       DB_HOST: db  # Установка хоста базы данных
       DB_PORT: 5432  # Установка порта базы данных

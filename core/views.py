@@ -1,8 +1,10 @@
 from django.contrib.auth import login
 from rest_framework import status
-from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, UpdateAPIView
+from rest_framework.generics import CreateAPIView, UpdateAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
+from rest_framework.generics import RetrieveUpdateDestroyAPIView
+from django.contrib.auth import logout
 
 from core.models import User
 from core.serializers import UserSerializer, LoginSerializer, UserProfileSerializer, ChangePasswordSerializer
@@ -23,10 +25,6 @@ class LoginViews(CreateAPIView):
         user = serializer.save()
         login(request=request, user=user)
         return Response(serializer.data)
-
-
-from rest_framework.generics import RetrieveUpdateDestroyAPIView
-from django.contrib.auth import logout
 
 
 class UserProfileView(RetrieveUpdateDestroyAPIView):
