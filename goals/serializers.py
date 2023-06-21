@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from core.serializers import UserSerializer
 from goals.models import GoalCategory, Goal, GoalComment
-
+from django.core.exceptions import PermissionDenied
 
 # _______________________________________________________________
 # ________________goal_category_serializers______________________
@@ -40,7 +40,7 @@ class GoalCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("not allowed in deleted category")
 
         if value.user != self.context["request"].user:
-            raise serializers.ValidationError("not owner of category")
+            raise PermissionDenied("not owner of category")
 
         return value
 

@@ -24,7 +24,7 @@ class GoalDetailView(RetrieveUpdateDestroyAPIView):
     def perform_destroy(self, instance):
         instance.status = Goal.Status.archived  # Перемещаем цель в статус "Архив"
         instance.save()
-        return instance
+        return None
 
 
 class GoalListView(ListAPIView):
