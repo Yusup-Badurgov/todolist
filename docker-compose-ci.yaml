@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   frontend:
-    image: sermalenk/skypro-front:lesson-35  # Образ контейнера для фронтенда
+    image:  sermalenk/skypro-front:lesson-37  # Образ контейнера для фронтенда
     container_name: frontend  # Задание имени контейнера для сервиса frontend
     restart: always  # Перезапускать контейнер всегда при его остановке
     ports:
