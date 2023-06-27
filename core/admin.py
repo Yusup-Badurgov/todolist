@@ -17,3 +17,4 @@ class CstomUserAdmin(UserAdmin):
         ('Permissions', {"fields": ("is_active", "is_staff", 'is_superuser')}),
         ('dates', {"fields": ("last_login", "date_joined")}),
     )
+
