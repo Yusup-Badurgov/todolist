@@ -77,13 +77,15 @@ services:
     image: yusup26/django-todolist:${GITHUB_REF_NAME}-${GITHUB_RUN_ID}
     container_name: bot
     environment:
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      BOT_TOKEN: ${BOT_TOKEN}
       SECRET_KEY: ${SECRET_KEY}
+      VK_OAUTH_KEY: ${VK_OAUTH_KEY} #id приложения VK
+      VK_OAUTH_SECRET: ${VK_OAUTH_SECRET} #Секрет приложения VK
+      DB_HOST: db  # Установка хоста базы данных
+      DB_PORT: 5432  # Установка порта базы данных
+      DB_NAME: ${DB_NAME}  # Установка имени базы данных
+      DB_USER: ${DB_USER}  # Установка пользователя базы данных
+      DB_PASSWORD: ${DB_PASSWORD}  # Установка пароля базы данных
+      BOT_TOKEN: ${BOT_TOKEN}
     depends_on:
       db:
         condition: service_healthy
