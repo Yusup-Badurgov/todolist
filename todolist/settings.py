@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'django_filters',
     'core',
     'goals',
+    'bot',
 
 ]
 
@@ -150,3 +151,5 @@ AUTHENTICATION_BACKENDS = (
     'social_core.backends.vk.VKOAuth2',
     'django.contrib.auth.backends.ModelBackend'
 )
+
+BOT_TOKEN = env("BOT_TOKEN")

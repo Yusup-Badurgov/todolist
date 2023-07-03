@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   frontend:
-    image:  sermalenk/skypro-front:lesson-37  # Образ контейнера для фронтенда
+    image:  sermalenk/skypro-front:lesson-38  # Образ контейнера для фронтенда
     restart: always  # Перезапускать контейнер всегда при его остановке
     depends_on:
       - api  # Ожидание запуска сервиса api перед запуском фронтенда
@@ -70,6 +70,22 @@ services:
       timeout: 15s  # Время ожидания выполнения healthcheck
       interval: 4s  # Интервал между проверками
       retries: 10  # Количество попыток проверки
+
+
+  bot:
+    build: .
+    container_name: bot
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      BOT_TOKEN: ${BOT_TOKEN}
+    depends_on:
+      db:
+        condition: service_healthy
+    command: python manage.py runbot
 
 volumes:
   todolist:  # Определение тома для контейнера

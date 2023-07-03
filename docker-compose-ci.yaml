@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   frontend:
-    image:  sermalenk/skypro-front:lesson-37  # Образ контейнера для фронтенда
+    image:  sermalenk/skypro-front:lesson-38  # Образ контейнера для фронтенда
     container_name: frontend  # Задание имени контейнера для сервиса frontend
     restart: always  # Перезапускать контейнер всегда при его остановке
     ports:
@@ -70,6 +70,22 @@ services:
       interval: 5s  # Интервал между проверками
       timeout: 5s  # Время ожидания выполнения healthcheck
       retries: 15  # Количество попыток проверки
+
+  bot:
+    image: yusup26/django-todolist:${GITHUB_REF_NAME}-${GITHUB_RUN_ID}
+    container_name: bot
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      BOT_TOKEN: ${BOT_TOKEN}
+    depends_on:
+      db:
+        condition: service_healthy
+    command: python manage.py runbot
+
 
 volumes:
   db_data:  # Определение тома для контейнера

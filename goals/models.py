@@ -92,6 +92,9 @@ class Board(models.Model):
     created = models.DateTimeField(verbose_name="Дата создания", auto_now_add=True)
     updated = models.DateTimeField(verbose_name="Дата последнего обновления", auto_now=True)
 
+    def __str__(self):
+        return '{}'.format(self.title)
+
 
 class BoardParticipant(models.Model):
     class Meta:
@@ -122,3 +125,6 @@ class BoardParticipant(models.Model):
 
     created = models.DateTimeField(verbose_name="Дата создания", auto_now_add=True)
     updated = models.DateTimeField(verbose_name="Дата последнего обновления", auto_now=True)
+
+    def __str__(self):
+        return '{}: {}'.format(self.board, self.user)
