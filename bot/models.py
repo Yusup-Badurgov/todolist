@@ -19,7 +19,7 @@ class TgUser(models.Model):
     username = models.CharField(max_length=512, verbose_name="tg username", null=True, blank=True, default=None)
     user = models.ForeignKey(User, models.PROTECT, null=True, blank=True, default=None,
                              verbose_name='Связанный пользователь')
-    verification_code = models.CharField(max_length=32, verbose_name="Код подтверждения")
+    verification_code = models.CharField(max_length=12, verbose_name="Код подтверждения")
 
     def set_verification_code(self):
         code = "".join([random.choice(CODE_VOCABULARY) for _ in range(12)])
