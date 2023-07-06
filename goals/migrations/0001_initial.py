@@ -6,7 +6,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -22,7 +21,8 @@ class Migration(migrations.Migration):
                 ('is_deleted', models.BooleanField(default=False, verbose_name='Удалена')),
                 ('created', models.DateTimeField(verbose_name='Дата создания')),
                 ('updated', models.DateTimeField(verbose_name='Дата последнего обновления')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL, verbose_name='Автор')),
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL,
+                                           verbose_name='Автор')),
             ],
             options={
                 'verbose_name': 'Категория',

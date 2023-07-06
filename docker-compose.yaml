@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   frontend:
-    image:  sermalenk/skypro-front:lesson-38  # Образ контейнера для фронтенда
+    image: sermalenk/skypro-front:lesson-38  # Образ контейнера для фронтенда
     restart: always  # Перезапускать контейнер всегда при его остановке
     depends_on:
       - api  # Ожидание запуска сервиса api перед запуском фронтенда
@@ -14,8 +14,8 @@ services:
       context: .
       dockerfile: Dockerfile  # Использование Dockerfile для построения образа контейнера
     restart: always  # Перезапускать контейнер всегда при его остановке
-#    env_file:
-#      - .env  # Использование файла .env для загрузки переменных окружения
+    #    env_file:
+    #      - .env  # Использование файла .env для загрузки переменных окружения
     environment:
       DB_HOST: db  # Установка хоста базы данных
       DB_PORT: 5432  # Установка порта базы данных
@@ -41,8 +41,8 @@ services:
     depends_on:
       db:
         condition: service_healthy  # Ожидание, пока сервис db будет в состоянии "здоров"
-#    env_file:
-#      - .env  # Использование файла .env для загрузки переменных окружения
+    #    env_file:
+    #      - .env  # Использование файла .env для загрузки переменных окружения
     environment:
       SECRET_KEY: ${SECRET_KEY}
       VK_OAUTH_KEY: ${VK_OAUTH_KEY} #id приложения VK

@@ -9,16 +9,24 @@ from django.core.exceptions import PermissionDenied
 
 # _______________________________________________________________
 # ________________goal_category_serializers______________________
+
 class GoalCategoryCreateSerializer(serializers.ModelSerializer):
-    """ Модель проверки объекта `Категория` является пользователь владельцем или редактором """
-    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    """
+    Сериализатор для создания объектов модели GoalCategory.
+    Проверяет, является ли пользователь владельцем или редактором доски, связанной с категорией цели.
+    """
+
+    user: serializers.HiddenField = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
-        model = GoalCategory
-        fields = '__all__'
-        read_only_fields = ["id", "created", "updated", "user"]
+        model: GoalCategory = GoalCategory
+        fields: list = '__all__'
+        read_only_fields: list = ["id", "created", "updated", "user"]
 
     def validate_board(self, value):
+        """
+        Проверяет, что доска, связанная с категорией, не удалена и пользователь является владельцем или редактором.
+        """
         if value.is_deleted:
             raise serializers.ValidationError("Не разрешено в удаленном объекте")
         allow = BoardParticipant.objects.filter(
@@ -32,29 +40,39 @@ class GoalCategoryCreateSerializer(serializers.ModelSerializer):
 
 
 class GoalCategorySerializer(serializers.ModelSerializer):
-    """ Модель вывода объекта """
-    user = UserSerializer(read_only=True)
+    """
+    Сериализатор для вывода объектов модели GoalCategory.
+    """
+
+    user: UserSerializer = UserSerializer(read_only=True)
 
     class Meta:
-        model = GoalCategory
-        fields = '__all__'
-        read_only_fields = ("id", "created", "updated", "user", "board")
+        model: GoalCategory = GoalCategory
+        fields: list = '__all__'
+        read_only_fields: tuple = ("id", "created", "updated", "user", "board")
 
 
 # _______________________________________________________________
 # ________________goal_serializers_______________________________
 
 class GoalCreateSerializer(serializers.ModelSerializer):
-    """ Модель создания объекта `ЦЕЛЬ`. Фильтр, что объект `ЦЕЛЬ` является владельцем. """
-    category = serializers.PrimaryKeyRelatedField(queryset=GoalCategory.objects.all())
-    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    """
+    Сериализатор для создания объектов модели Goal.
+    Фильтрует, чтобы пользователь был владельцем категории, связанной с целью.
+    """
+
+    category: serializers.PrimaryKeyRelatedField = serializers.PrimaryKeyRelatedField(queryset=GoalCategory.objects.all())
+    user: serializers.HiddenField = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
-        model = Goal
-        fields = '__all__'
-        read_only_fields = ["id", "created", "updated", "user"]
+        model: Goal = Goal
+        fields: list = '__all__'
+        read_only_fields: list = ["id", "created", "updated", "user"]
 
     def validate_category(self, value):
+        """
+        Проверяет, что категория, связанная с целью, не удалена и пользователь является владельцем категории.
+        """
         if value.is_deleted:
             raise serializers.ValidationError("Не разрешено в удаленной категории")
 
@@ -68,15 +86,21 @@ class GoalCreateSerializer(serializers.ModelSerializer):
 
 
 class GoalSerializer(serializers.ModelSerializer):
-    """ Модель объекта `ЦЕЛЬ`. """
-    user = UserSerializer(read_only=True)
+    """
+    Сериализатор для вывода объектов модели Goal.
+    """
+
+    user: UserSerializer = UserSerializer(read_only=True)
 
     class Meta:
-        model = Goal
-        fields = '__all__'
-        read_only_fields = ("id", "created", "updated", "user")
+        model: Goal = Goal
+        fields: list = '__all__'
+        read_only_fields: tuple = ("id", "created", "updated", "user")
 
     def validate_category(self, value):
+        """
+        Проверяет, что категория, связанная с целью, не удалена и пользователь является владельцем категории.
+        """
         if value.is_deleted:
             raise serializers.ValidationError("Не разрешено в удаленной категории")
 
@@ -86,17 +110,25 @@ class GoalSerializer(serializers.ModelSerializer):
 
 
 # _______________________________________________________________
-# ________________goal_cooment_serializers_______________________________
+# ________________goal_comment_serializers_______________________________
+
 class CommentCreateSerializer(serializers.ModelSerializer):
-    """ Модель создания объекта `Комментарий` и проверки его на владельца или редактора. """
-    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    """
+    Сериализатор для создания объектов модели GoalComment.
+    Проверяет, является ли пользователь автором комментария.
+    """
+
+    user: serializers.HiddenField = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
-        model = GoalComment
-        fields = '__all__'
-        read_only_fields = ("id", "created", "updated", "user")
+        model: GoalComment = GoalComment
+        fields: list = '__all__'
+        read_only_fields: tuple = ("id", "created", "updated", "user")
 
     def validate_goal(self, value):
+        """
+        Проверяет, что пользователь является автором комментария.
+        """
         if not BoardParticipant.objects.filter(
                 board_id=value.category.board_id,
                 role__in=[BoardParticipant.Role.owner, BoardParticipant.Role.writer],
@@ -107,26 +139,37 @@ class CommentCreateSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    """ Модель вывода объектов `Комментарий` """
-    user = UserSerializer(read_only=True)
+    """
+    Сериализатор для вывода объектов модели GoalComment.
+    """
+
+    user: UserSerializer = UserSerializer(read_only=True)
 
     class Meta:
-        model = GoalComment
-        fields = '__all__'
-        read_only_fields = ("id", "created", "updated", "user", "goal")
+        model: GoalComment = GoalComment
+        fields: list = '__all__'
+        read_only_fields: tuple = ("id", "created", "updated", "user", "goal")
 
 
 # _______________________________________________________________
 # ________________goal_board_serializers_______________________________
+
 class BoardCreateSerializer(serializers.ModelSerializer):
-    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    """
+    Сериализатор для создания объектов модели Board.
+    """
+
+    user: serializers.HiddenField = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
-        model = Board
-        read_only_fields = ("id", "created", "updated")
-        fields = "__all__"
+        model: Board = Board
+        read_only_fields: tuple = ("id", "created", "updated")
+        fields: str = "__all__"
 
     def create(self, validated_data):
+        """
+        Создает новую доску и добавляет пользователя в качестве владельца.
+        """
         user = validated_data.pop("user")
         board = Board.objects.create(**validated_data)
         BoardParticipant.objects.create(
@@ -136,29 +179,40 @@ class BoardCreateSerializer(serializers.ModelSerializer):
 
 
 class BoardParticipantSerializer(serializers.ModelSerializer):
-    role = serializers.ChoiceField(
+    """
+    Сериализатор для объектов модели BoardParticipant.
+    """
+
+    role: serializers.ChoiceField = serializers.ChoiceField(
         required=True, choices=BoardParticipant.Role.choices
     )
-    user = serializers.SlugRelatedField(
+    user: serializers.SlugRelatedField = serializers.SlugRelatedField(
         slug_field="username", queryset=User.objects.all()
     )
 
     class Meta:
-        model = BoardParticipant
-        fields = "__all__"
-        read_only_fields = ("id", "created", "updated", "board")
+        model: BoardParticipant = BoardParticipant
+        fields: str = "__all__"
+        read_only_fields: tuple = ("id", "created", "updated", "board")
 
 
 class BoardSerializer(serializers.ModelSerializer):
-    participants = BoardParticipantSerializer(many=True)
-    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    """
+    Сериализатор для вывода объектов модели Board.
+    """
+
+    participants: BoardParticipantSerializer = BoardParticipantSerializer(many=True)
+    user: serializers.HiddenField = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
-        model = Board
-        fields = "__all__"
-        read_only_fields = ("id", "created", "updated")
+        model: Board = Board
+        fields: str = "__all__"
+        read_only_fields: tuple = ("id", "created", "updated")
 
     def update(self, instance, validated_data):
+        """
+        Обновляет доску и роли участников доски.
+        """
         owner = validated_data.pop("user")
         new_participants = validated_data.pop("participants")
         new_by_id = {part["user"].id: part for part in new_participants}
@@ -174,7 +228,9 @@ class BoardSerializer(serializers.ModelSerializer):
                         old_participant.save()
                     new_by_id.pop(old_participant.user_id)
             for new_part in new_by_id.values():
-                BoardParticipant.objects.create(board=instance, user=new_part["user"], role=new_part["role"])
+                BoardParticipant.objects.create(
+                    board=instance, user=new_part["user"], role=new_part["role"]
+                )
 
             instance.title = validated_data["title"]
             instance.save()
@@ -183,6 +239,10 @@ class BoardSerializer(serializers.ModelSerializer):
 
 
 class BoardListSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для вывода списка досок.
+    """
+
     class Meta:
-        model = Board
-        fields = "__all__"
+        model: Board = Board
+        fields: str = "__all__"

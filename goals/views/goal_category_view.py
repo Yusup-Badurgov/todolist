@@ -12,38 +12,64 @@ from goals.serializers import GoalCategorySerializer, GoalCategoryCreateSerializ
 
 
 class GoalCategoryCreateView(CreateAPIView):
-    model = GoalCategory
-    permission_classes = [IsAuthenticated]
-    serializer_class = GoalCategoryCreateSerializer
+    """
+    Представление для создания новой категории целей.
+    Позволяет создать новую категорию целей с использованием сериализатора GoalCategoryCreateSerializer.
+    """
+
+    model: GoalCategory = GoalCategory
+    permission_classes: list = [IsAuthenticated]
+    serializer_class: GoalCategoryCreateSerializer = GoalCategoryCreateSerializer
 
 
 class GoalCategoryListView(ListAPIView):
-    """ Модель представления, которая позволяет просматривать все объекты Category """
-    model = GoalCategory
-    permission_classes = [IsAuthenticated]
-    serializer_class = GoalCategorySerializer
-    pagination_class = LimitOffsetPagination
-    filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter, ]
-    ordering_fields = ["title", "created"]
-    filterset_fields = ["board", "user"]
-    ordering = ["title"]
-    search_fields = ["title"]
+    """
+    Представление для просмотра списка всех категорий целей.
+    Позволяет получить список всех категорий целей, к которым пользователь имеет доступ,
+    с использованием сериализатора GoalCategorySerializer.
+    """
 
-    def get_queryset(self):
+    model: GoalCategory = GoalCategory
+    permission_classes: list = [IsAuthenticated]
+    serializer_class: GoalCategorySerializer = GoalCategorySerializer
+    pagination_class: LimitOffsetPagination = LimitOffsetPagination
+    filter_backends: list = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
+    ordering_fields: list = ["title", "created"]
+    filterset_fields: list = ["board", "user"]
+    ordering: list = ["title"]
+    search_fields: list = ["title"]
+
+    def get_queryset(self) -> QuerySet[GoalCategory]:
+        """
+        Возвращает queryset категорий целей, к которым пользователь имеет доступ.
+        Фильтрация осуществляется по полю board, где пользователь является участником,
+        и исключаются удаленные категории.
+        """
         return GoalCategory.objects.filter(board__participants__user=self.request.user, is_deleted=False)
 
 
-
 class GoalCategoryView(RetrieveUpdateDestroyAPIView):
-    """ Модель представления, которая позволяет редактировать и удалять объекты из Category """
-    model = GoalCategory
-    serializer_class = GoalCategorySerializer
-    permission_classes = [IsAuthenticated, GoalCategoryPermissions]
+    """
+    Представление для просмотра, обновления и удаления категории целей.
+    Позволяет получить, обновить и удалить категорию целей с использованием сериализатора GoalCategorySerializer.
+    """
+
+    model: GoalCategory = GoalCategory
+    serializer_class: GoalCategorySerializer = GoalCategorySerializer
+    permission_classes: list = [IsAuthenticated, GoalCategoryPermissions]
 
     def get_queryset(self) -> QuerySet[GoalCategory]:
+        """
+        Возвращает queryset категорий целей, к которым пользователь имеет доступ.
+        Исключаются удаленные категории.
+        """
         return GoalCategory.objects.filter(board__participants__user=self.request.user).exclude(is_deleted=True)
 
-    def perform_destroy(self, instance):
+    def perform_destroy(self, instance: GoalCategory) -> GoalCategory:
+        """
+        Выполняет удаление категории целей.
+        При удалении категории помечает ее как is_deleted и обновляет статус всех связанных целей на "archived".
+        """
         with transaction.atomic():
             instance.is_deleted = True
             instance.save()

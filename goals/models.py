@@ -4,16 +4,17 @@ from django.utils import timezone
 from core.models import User
 
 
-# __________________________________________________
-# ________________GoalCategory_models______________________
 class GoalCategory(models.Model):
+    """
+    Модель категории цели.
+    Связана с моделью `Board` через внешний ключ `board`.
+    Содержит информацию о названии, авторе, флаге удаления, дате создания и дате последнего обновления.
+    """
     class Meta:
         verbose_name = "Категория"
         verbose_name_plural = "Категории"
 
-    board = models.ForeignKey(
-        'Board', verbose_name="Доска", on_delete=models.PROTECT, related_name="categories"
-    )
+    board = models.ForeignKey('Board', verbose_name="Доска", on_delete=models.PROTECT, related_name="categories")
     title = models.CharField(verbose_name="Название", max_length=255)
     user = models.ForeignKey(User, verbose_name="Автор", on_delete=models.PROTECT)
     is_deleted = models.BooleanField(verbose_name="Удалена", default=False)
@@ -21,6 +22,9 @@ class GoalCategory(models.Model):
     updated = models.DateTimeField(verbose_name="Дата последнего обновления")
 
     def save(self, *args, **kwargs):
+        """
+        Переопределение метода save для автоматического проставления даты создания и обновления.
+        """
         if not self.id:  # Когда объект только создается, у него еще нет id
             self.created = timezone.now()  # проставляем дату создания
         self.updated = timezone.now()  # проставляем дату обновления
@@ -30,9 +34,11 @@ class GoalCategory(models.Model):
         return self.title
 
 
-# __________________________________________________
-# ________________Goal__models______________________
 class Goal(models.Model):
+    """
+    Модель цели.
+    Содержит информацию о статусе, приоритете, авторе, категории, заголовке, описании и дате выполнения.
+    """
     class Status(models.IntegerChoices):
         to_do = 1, "К выполнению"
         in_progress = 2, "В процессе"
@@ -62,9 +68,11 @@ class Goal(models.Model):
         verbose_name_plural = "Цели"
 
 
-# __________________________________________________
-# ________________GoalComment__models______________________
 class GoalComment(models.Model):
+    """
+    Модель комментария к цели.
+    Содержит информацию о тексте, цели, пользователе, дате создания и дате последнего обновления.
+    """
     text = models.TextField(verbose_name="Текст")
     goal = models.ForeignKey(Goal, verbose_name="Цель", on_delete=models.CASCADE)
     user = models.ForeignKey(User, verbose_name="Пользователь", related_name="comments", on_delete=models.PROTECT)
@@ -79,10 +87,11 @@ class GoalComment(models.Model):
         verbose_name_plural = "Комментарии"
 
 
-# __________________________________________________
-# ________________Board__models______________________
-
 class Board(models.Model):
+    """
+    Модель доски.
+    Содержит информацию о названии, флаге удаления, дате создания и дате последнего обновления.
+    """
     class Meta:
         verbose_name = "Доска"
         verbose_name_plural = "Доски"
@@ -97,6 +106,11 @@ class Board(models.Model):
 
 
 class BoardParticipant(models.Model):
+    """
+    Модель участника доски.
+    Связывает модели `Board` и `User` через внешние ключи `board` и `user`.
+    Содержит информацию о роли участника, дате создания и дате последнего обновления.
+    """
     class Meta:
         unique_together = ("board", "user")
         verbose_name = "Участник"

@@ -6,7 +6,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('goals', '0003_goalcomment'),
@@ -30,17 +29,21 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='goalcategory',
             name='board',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, related_name='categories', to='goals.board', verbose_name='Доска'),
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, related_name='categories',
+                                    to='goals.board', verbose_name='Доска'),
         ),
         migrations.CreateModel(
             name='BoardParticipant',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('role', models.PositiveSmallIntegerField(choices=[(1, 'Владелец'), (2, 'Редактор'), (3, 'Читатель')], default=1, verbose_name='Роль')),
+                ('role', models.PositiveSmallIntegerField(choices=[(1, 'Владелец'), (2, 'Редактор'), (3, 'Читатель')],
+                                                          default=1, verbose_name='Роль')),
                 ('created', models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')),
                 ('updated', models.DateTimeField(auto_now=True, verbose_name='Дата последнего обновления')),
-                ('board', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='participants', to='goals.board', verbose_name='Доска')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='participants', to=settings.AUTH_USER_MODEL, verbose_name='Пользователь')),
+                ('board', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='participants',
+                                            to='goals.board', verbose_name='Доска')),
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='participants',
+                                           to=settings.AUTH_USER_MODEL, verbose_name='Пользователь')),
             ],
             options={
                 'verbose_name': 'Участник',

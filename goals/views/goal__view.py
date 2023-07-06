@@ -12,21 +12,21 @@ from goals.serializers import GoalCreateSerializer, GoalSerializer
 
 class GoalCreateView(CreateAPIView):
     """ Модель представления, которая позволяет создавать объект Goal """
-    model = Goal
-    serializer_class = GoalCreateSerializer
-    permission_classes = [IsAuthenticated]
+    model: Goal = Goal
+    serializer_class: GoalCreateSerializer = GoalCreateSerializer
+    permission_classes: list = [IsAuthenticated]
 
 
 class GoalDetailView(RetrieveUpdateDestroyAPIView):
     """ Модель представления, которая позволяет редактировать и удалять объекты Goal. """
-    model = Goal
-    serializer_class = GoalSerializer
-    permission_classes = [IsAuthenticated, GoalPermissions]
+    model: Goal = Goal
+    serializer_class: GoalSerializer = GoalSerializer
+    permission_classes: list = [IsAuthenticated, GoalPermissions]
 
     def get_queryset(self):
         return Goal.objects.filter(category__board__participants__user=self.request.user)
 
-    def perform_destroy(self, instance):
+    def perform_destroy(self, instance: Goal) -> Goal:
         instance.status = Goal.Status.archived
         instance.save()
         return instance
@@ -37,15 +37,15 @@ class GoalListView(ListAPIView):
     Модель представления, которая позволяет выводить все объекты Goal.
     Сортировать, фильтровать и искать по полям `title`, `description`
     """
-    model = Goal
-    permission_classes = [IsAuthenticated]
-    serializer_class = GoalSerializer
-    pagination_class = LimitOffsetPagination
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter, ]
-    filterset_class = GoalDateFilter
-    search_fields = ["title", "description"]
-    ordering_fields = ["due_date", "priority"]
-    ordering = ["priority", "due_date"]
+    model: Goal = Goal
+    permission_classes: list = [IsAuthenticated]
+    serializer_class: GoalSerializer = GoalSerializer
+    pagination_class: LimitOffsetPagination = LimitOffsetPagination
+    filter_backends: list = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter, ]
+    filterset_class: GoalDateFilter = GoalDateFilter
+    search_fields: list = ["title", "description"]
+    ordering_fields: list = ["due_date", "priority"]
+    ordering: list = ["priority", "due_date"]
 
     def get_queryset(self):
         return Goal.objects.filter(category__board__participants__user=self.request.user)

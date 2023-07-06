@@ -11,16 +11,16 @@ from goals.serializers import CommentCreateSerializer, CommentSerializer
 
 class CommentCreateView(CreateAPIView):
     """ Модель представления, которая позволяет создавать объекты Comment. """
-    model = GoalComment
-    serializer_class = CommentCreateSerializer
-    permission_classes = [IsAuthenticated]
+    model: GoalComment = GoalComment
+    serializer_class: CommentCreateSerializer = CommentCreateSerializer
+    permission_classes: list = [IsAuthenticated]
 
 
 class CommentDetailView(RetrieveUpdateDestroyAPIView):
     """ Модель представления, которая позволяет редактировать и удалять объекты Comment. """
-    model = GoalComment
-    serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticated, CommentPermissions]
+    model: GoalComment = GoalComment
+    serializer_class: CommentSerializer = CommentSerializer
+    permission_classes: list = [IsAuthenticated, CommentPermissions]
 
     def get_queryset(self):
         return GoalComment.objects.filter(goal__category__board__participants__user=self.request.user)
@@ -31,13 +31,13 @@ class CommentListView(ListAPIView):
     Модель представления, которая позволяет выводить все объекты Comment.
     Так же сортирую и делает фильтрацию по полю `goal`.
     """
-    model = GoalComment
-    serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticated]
-    pagination_class = LimitOffsetPagination
-    filter_backends = [filters.OrderingFilter, DjangoFilterBackend]
-    filterset_fields = ["goal"]
-    ordering = "-id"
+    model: GoalComment = GoalComment
+    serializer_class: CommentSerializer = CommentSerializer
+    permission_classes: list = [IsAuthenticated]
+    pagination_class: LimitOffsetPagination = LimitOffsetPagination
+    filter_backends: list = [filters.OrderingFilter, DjangoFilterBackend]
+    filterset_fields: list = ["goal"]
+    ordering: str = "-id"
 
     def get_queryset(self):
         return GoalComment.objects.filter(goal__category__board__participants__user=self.request.user)

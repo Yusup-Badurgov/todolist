@@ -34,7 +34,8 @@ class Command(BaseCommand):
 
     def handle_message(self, msg: Message):
         # logger.info(f'{msg}')
-        tg_user, created = TgUser.objects.get_or_create(user_ud=msg.from_.id, defaults={"chat_id": msg.chat.id, "username": msg.from_.username})
+        tg_user, created = TgUser.objects.get_or_create(user_ud=msg.from_.id, defaults={"chat_id": msg.chat.id,
+                                                                                        "username": msg.from_.username})
         if "/start" in msg.text:
             self.tg_client.send_message(
                 msg.chat.id, "Приветствую!\n"
@@ -93,16 +94,25 @@ class Command(BaseCommand):
         elif ('user' not in user_states['state']) and (msg.text not in allowed_commands):
             self.tg_client.send_message(tg_user.chat_id, 'Неизвестная команда')
 
-        elif (msg.text not in allowed_commands) and (user_states['state']['user']) and ('category' not in user_states['state']):
+        elif (msg.text not in allowed_commands) and (user_states['state']['user']) and (
+                'category' not in user_states['state']):
             category = self.handle_save_category(msg, tg_user)
             if category:
+                # Корректное значение или ID категории
                 user_states['state']['category'] = category
-                self.tg_client.send_message(tg_user.chat_id, f'Выбрана категория:\n {category}.\nВведите заголовок цели.')
+                self.tg_client.send_message(tg_user.chat_id,
+                                            f'Выбрана категория:\n {category}.\nВведите заголовок цели.')
+            else:
+                # Некорректное значение или ID категории
+                self.tg_client.send_message(tg_user.chat_id,
+                                            'Некорректная категория. Пожалуйста, укажите верное значение.')
 
-        elif (msg.text not in allowed_commands) and (user_states['state']['user']) and (user_states['state']['category']) and ('goal_title' not in user_states['state']):
+        elif (msg.text not in allowed_commands) and (user_states['state']['user']) and (
+        user_states['state']['category']) and ('goal_title' not in user_states['state']):
             user_states['state']['goal_title'] = msg.text
             logger.info(user_states)
-            goal = Goal.objects.create(title=user_states['state']['goal_title'], user=user_states['state']['user'], category=user_states['state']['category'],)
+            goal = Goal.objects.create(title=user_states['state']['goal_title'], user=user_states['state']['user'],
+                                       category=user_states['state']['category'], )
             self.tg_client.send_message(tg_user.chat_id, f'Цель: {goal} создана в БД')
             del user_states['state']['user']
             del user_states['state']['msg_chat_id']
@@ -129,7 +139,8 @@ class Command(BaseCommand):
             for category in GoalCategory.objects.filter(
                 board__participants__user=tg_user.user_id, is_deleted=False)]
         if resp_categories:
-            self.tg_client.send_message(msg.chat.id, "🏷 Ваши категории\n===================\n" + '\n'.join(resp_categories))
+            self.tg_client.send_message(msg.chat.id,
+                                        "🏷 Ваши категории\n===================\n" + '\n'.join(resp_categories))
         else:
             self.tg_client.send_message(msg.chat.id, 'У Вас нет ни одной категории!')
 
@@ -174,10 +185,16 @@ class Command(BaseCommand):
 
     @staticmethod
     def handle_save_category(msg: Message, tg_user: TgUser):
-        """ Обрабатыватывает категории для сохранения """
-        category_id = int(msg.text)
-        category_data = GoalCategory.objects.filter(user=tg_user.user).get(pk=category_id)
-        return category_data
+        try:
+            category_id = int(msg.text)
+            category_data = GoalCategory.objects.filter(user=tg_user.user).get(pk=category_id)
+            return category_data
+        except ValueError:
+            # Обработка случая, когда пользователь ввел некорректное значение
+            return None
+        except GoalCategory.DoesNotExist:
+            # Обработка случая, когда указанный ID категории не существует
+            return None
 
     def get_cancel(self, msg: Message, tg_user: TgUser):
         if 'user' in user_states['state']:

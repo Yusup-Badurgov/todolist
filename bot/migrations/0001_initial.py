@@ -6,7 +6,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -20,9 +19,12 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('chat_id', models.BigIntegerField(verbose_name='Чат ID')),
                 ('user_ud', models.BigIntegerField(unique=True, verbose_name='user ud')),
-                ('username', models.CharField(blank=True, default=None, max_length=512, null=True, verbose_name='tg username')),
+                ('username',
+                 models.CharField(blank=True, default=None, max_length=512, null=True, verbose_name='tg username')),
                 ('verification_code', models.CharField(max_length=32, verbose_name='Код подтверждения')),
-                ('user', models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL, verbose_name='Связанный пользователь')),
+                ('user',
+                 models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.PROTECT,
+                                   to=settings.AUTH_USER_MODEL, verbose_name='Связанный пользователь')),
             ],
             options={
                 'verbose_name': 'Телеграм Пользователь',

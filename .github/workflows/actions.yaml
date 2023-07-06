@@ -2,7 +2,7 @@ name: Build and deploy action  # Название workflow
 
 on:
   push:
-    branches: ["master"]  # Запуск workflow при push в ветку master
+    branches: [ "master" ]  # Запуск workflow при push в ветку master
 
 jobs:
   build_and_push:
@@ -26,7 +26,7 @@ jobs:
   deploy:
     needs: build_and_push  # Зависимость от успешного завершения job build_and_push
     runs-on: ubuntu-20.04  # Запуск на операционной системе Ubuntu 20.04
-    env:  # Определение переменных окружения для job
+    env: # Определение переменных окружения для job
       SECRET_KEY: ${{ secrets.SECRET_KEY }}  # Секретный ключ из секретов
       DB_USER: ${{ secrets.DB_USER }}  # Пользователь базы данных из секретов
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}  # Пароль базы данных из секретов
@@ -69,13 +69,3 @@ jobs:
             whoami
             cd deploy
             echo ${{ secrets.SSH_PASSWORD }} | sudo -S docker-compose up -d
-
-#      # ========= REMOVING INACTIVE IMAGES ============
-#      - name: Removing Images
-#        uses: appleboy/ssh-action@v0.1.10
-#        with:
-#          host: ${{ secrets.SSH_HOST }}
-#          username: ${{ secrets.SSH_USERNAME }}
-#          password: ${{ secrets.SSH_PASSWORD }}
-#          script: |
-#            docker system prune -a -f

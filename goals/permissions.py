@@ -14,6 +14,7 @@ class GoalCategoryPermissions(permissions.BasePermission):
         - Если метод не входит (это значит, что мы пытаемся изменить или удалить категорию), то обязательно проверяем,
           что наш текущий пользователь является создателем категории.
     """
+
     def has_object_permission(self, request, view, obj):
         if not request.user.is_authenticated:
             return False
@@ -23,6 +24,7 @@ class GoalCategoryPermissions(permissions.BasePermission):
             user=request.user, board=obj.board,
             role__in=[BoardParticipant.Role.owner, BoardParticipant.Role.writer],
         ).exists()
+
 
 class BoardPermissions(permissions.BasePermission):
     """
@@ -35,6 +37,7 @@ class BoardPermissions(permissions.BasePermission):
         - Если метод не входит (это значит, что мы пытаемся изменить или удалить доску), то обязательно проверяем,
           что наш текущий пользователь является создателем доски.
     """
+
     def has_object_permission(self, request, view, obj):
         if not request.user.is_authenticated:
             return False
@@ -42,8 +45,6 @@ class BoardPermissions(permissions.BasePermission):
             return BoardParticipant.objects.filter(user=request.user, board=obj).exists()
         return BoardParticipant.objects.filter(
             user=request.user, board=obj, role=BoardParticipant.Role.owner).exists()
-
-
 
 
 class GoalPermissions(permissions.BasePermission):
@@ -57,6 +58,7 @@ class GoalPermissions(permissions.BasePermission):
         - Если метод не входит (это значит, что мы пытаемся изменить или удалить цель), то обязательно проверяем,
           что наш текущий пользователь является создателем цели.
     """
+
     def has_object_permission(self, request, view, obj):
         if not request.user.is_authenticated:
             return False
@@ -66,7 +68,6 @@ class GoalPermissions(permissions.BasePermission):
             user=request.user, board=obj.category.board,
             role__in=[BoardParticipant.Role.owner, BoardParticipant.Role.writer],
         ).exists()
-
 
 
 class CommentPermissions(permissions.BasePermission):
@@ -80,6 +81,7 @@ class CommentPermissions(permissions.BasePermission):
         - Если метод не входит (это значит, что мы пытаемся изменить или удалить комментарий), то обязательно проверяем,
           что наш текущий пользователь является создателем комментария.
     """
+
     def has_object_permission(self, request, view, obj):
         if not request.user.is_authenticated:
             return False
